@@ -27,9 +27,14 @@ class ContactController {
     res.json({ message: '' });
   }
 
-  delete(req, res) {
-    console.log(req.query);
-    res.json({ message: '' });
+  async delete(req, res) {
+    const { id } = req.params;
+
+    if (!id) return res.status(400).json({ error: "ID de contato inválido!" });
+
+    await ContactRepository.delete(id);
+
+    res.sendStatus(204);
   }
 }
 
