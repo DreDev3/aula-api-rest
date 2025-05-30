@@ -18,12 +18,28 @@ class ContactRepository {
     return row;
   }
 
-  create() {
+  async create({ name, email, phone, category_id }) {
+    const register = await db.query(
+      `INSERT INTO contacts (name, email, phone, category_id)
+      values (?, ?, ?, ?)`, [name, email, phone, category_id]
+    )
 
+    const insertedId = register.insertId;
+    return {
+      id: insertedId,
+      name,
+      email,
+      phone,
+      category_id,
+    }
   }
 
-  update() {
+  async update(id) {
+    const updateItem = await db.query(
+      `UPDATE from contacts WHERE id = ?`, [id]
+    )
 
+    return updateItem;
   }
 
   async delete(id) {
@@ -32,6 +48,14 @@ class ContactRepository {
     )
 
     return deleteItem;
+  }
+
+  async findByEmail(email) {
+    const [queryEmail] = await db.query(
+      `SELECT * FROM contacts WHERE email = ?`, [email]
+    )
+
+    return queryEmail;
   }
 }
 

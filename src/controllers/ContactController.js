@@ -17,14 +17,38 @@ class ContactController {
     res.json(contact);
   }
 
-  store(req, res) {
-    console.log(req.query);
-    res.json({ message: '' });
+  async store(req, res) {
+    const { name, email, phone, category_id } = req.body;
+
+    if (!name) return res.status(400).json({ error: 'Nome é um campo obrigatorio' });
+
+    if (email) {
+      const contactByEmail = await ContactRepository.findByEmail(email);
+
+      if (contactByEmail) {
+        return res.status(400).json({ error: 'Esse e-mail já está cadastrado!' })
+      }
+
+    }
+
+    const contact = ContactRepository.create({
+      name,
+      email: email || null,
+      phone: phone || null,
+      category_id: category_id || null
+    });
+
+    res.status(201).json(contact);
   }
 
-  update(req, res) {
-    console.log(req.query);
-    res.json({ message: '' });
+  async update(req, res) {
+    const { id } = req.params;
+
+    const contact = await ContactRepository.update(id);
+
+    if (!contact) return req.status(404).json({ error: 'Contato não encontrado!' })
+
+    res.json(contact);
   }
 
   async delete(req, res) {
