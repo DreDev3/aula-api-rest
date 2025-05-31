@@ -43,12 +43,32 @@ class ContactController {
 
   async update(req, res) {
     const { id } = req.params;
+    const { name, email, phone, category_id } = req.body;
 
-    const contact = await ContactRepository.update(id);
+    const contact = await ContactRepository.findById(id);
 
-    if (!contact) return req.status(404).json({ error: 'Contato não encontrado!' })
+    if (!id) return res.status(404).json({ error: 'Contato não encontrado!' });
 
-    res.json(contact);
+    if (email) {
+      const contactByEmail = await ContactRepository.findByEmail(email);
+
+      if (contactByEmail) {
+        return res.status(400).json({ error: 'Esse e-mail já está cadastrado!' })
+      }
+
+    }
+
+    await ContactRepository.update(id, {
+      name: name ?? contact.name,
+      email: email ?? contact.email,
+      phone: phone ?? contact.phone,
+      category_id: category_id ?? contact.category_id
+    })
+
+    const updateContact = await ContactRepository.findById(id);
+    res.status(200).json(updateContact);
+
+
   }
 
   async delete(req, res) {

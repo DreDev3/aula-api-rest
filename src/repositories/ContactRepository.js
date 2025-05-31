@@ -21,7 +21,7 @@ class ContactRepository {
   async create({ name, email, phone, category_id }) {
     const register = await db.query(
       `INSERT INTO contacts (name, email, phone, category_id)
-      values (?, ?, ?, ?)`, [name, email, phone, category_id]
+      VALUES (?, ?, ?, ?)`, [name, email, phone, category_id]
     )
 
     const insertedId = register.insertId;
@@ -34,9 +34,12 @@ class ContactRepository {
     }
   }
 
-  async update(id) {
+  async update(id, { name, email, phone, category_id }) {
     const updateItem = await db.query(
-      `UPDATE from contacts WHERE id = ?`, [id]
+      `UPDATE contacts
+      set name = ?, email = ?, phone = ?, category_id = ?
+      WHERE id = ?`,
+      [name, email, phone, category_id, id]
     )
 
     return updateItem;
